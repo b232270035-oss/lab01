@@ -1,18 +1,50 @@
 import { test, expect } from '@playwright/test';
 
-test('has title', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+const storeUrl = 'https://www.saucedemo.com';
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+// Each test starts from a fresh browser context, so its login state is isolated.
+test.describe('SauceDemo UI автомат тест', () => {
+  test('TC01 - Амжилттай нэвтрэх', async ({ page }) => {
+    await page.goto(storeUrl);
+    await page.getByPlaceholder('Username').fill('standard_user');
+    await page.getByPlaceholder('Password').fill('secret_sauce');
+    await page.getByRole('button', { name: 'Login' }).click();
 
-test('get started link', async ({ page }) => {
-  await page.goto('https://playwright.dev/');
+    // Check both the destination and a visible page heading after login.
+    await expect(page).toHaveURL(/inventory\.html/);
+    await expect(page.getByText('Products')).toBeVisible();
 
-  // Click the get started link.
-  await page.getByRole('link', { name: 'Get started' }).click();
+    // Finish the successful login flow with logout.
+    await page.getByRole('button', { name: 'Open Menu' }).click();
+    await page.getByRole('link', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(storeUrl + '/');
+  });
 
-  // Expects page to have a heading with the name of Installation.
-  await expect(page.getByRole('heading', { name: 'Installation' })).toBeVisible();
+  test('TC02 - Буруу нууц үгээр нэвтрэх', async ({ page }) => {
+    await page.goto(storeUrl);
+    await page.getByPlaceholder('Username').fill('standard_user');
+    await page.getByPlaceholder('Password').fill('wrong_password');
+    await page.getByRole('button', { name: 'Login' }).click();
+
+    // Verify that invalid credentials show an accessible error message.
+    const errorMessage = page.locator('[data-test="error"]');
+    await expect(errorMessage).toBeVisible();
+    await expect(errorMessage).toContainText('Username and password do not match');
+  });
+
+  test('TC03 - Бүтээгдэхүүнийг сагсанд нэмэх', async ({ page }) => {
+    await page.goto(storeUrl);
+    await page.getByPlaceholder('Username').fill('standard_user');
+    await page.getByPlaceholder('Password').fill('secret_sauce');
+    await page.getByRole('button', { name: 'Login' }).click();
+
+    // Confirm the cart badge updates after adding the first product.
+    await page.getByRole('button', { name: 'Add to cart' }).first().click();
+    await expect(page.locator('.shopping_cart_badge')).toHaveText('1');
+
+    // Log out to leave the browser at the same clean state as other tests.
+    await page.getByRole('button', { name: 'Open Menu' }).click();
+    await page.getByRole('link', { name: 'Logout' }).click();
+    await expect(page).toHaveURL(storeUrl + '/');
+  });
 });
