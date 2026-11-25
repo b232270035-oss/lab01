@@ -16,7 +16,7 @@ test.describe('SauceDemo UI автомат тест', () => {
 
     // Finish the successful login flow with logout.
     await page.getByRole('button', { name: 'Open Menu' }).click();
-    await page.getByRole('link', { name: 'Logout' }).click();
+    await page.getByRole('button', { name: 'Logout' }).click();
     await expect(page).toHaveURL(storeUrl + '/');
   });
 
@@ -44,7 +44,7 @@ test.describe('SauceDemo UI автомат тест', () => {
 
     // Log out to leave the browser at the same clean state as other tests.
     await page.getByRole('button', { name: 'Open Menu' }).click();
-    await page.getByRole('link', { name: 'Logout' }).click();
+    await page.getByRole('button', { name: 'Logout' }).click();
     await expect(page).toHaveURL(storeUrl + '/');
   });
 });
