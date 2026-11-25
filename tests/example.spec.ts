@@ -27,7 +27,7 @@ test.describe('SauceDemo UI автомат тест', () => {
     await page.getByRole('button', { name: 'Login' }).click();
 
     // Verify that invalid credentials show an accessible error message.
-    const errorMessage = page.locator('[data-test="error"]');
+    const errorMessage = page.getByTestId('error');
     await expect(errorMessage).toBeVisible();
     await expect(errorMessage).toContainText('Username and password do not match');
   });

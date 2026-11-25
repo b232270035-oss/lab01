@@ -32,6 +32,7 @@ export default defineConfig({
     // Keep failure evidence so the submitted report can include traces and video.
     trace: 'on',
     video: 'on',
+    testIdAttribute: 'data-test',
   },
 
   /* Configure projects for major browsers */
